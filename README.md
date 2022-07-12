@@ -60,3 +60,122 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
 
 }
+
+package com.shashigroup.mvvmexample.login.model
+
+class Login_Model {
+
+    lateinit var email: String
+    lateinit var password: String
+
+    constructor(email: String, password: String) {
+        this.email = email
+        this.password = password
+    }
+
+
+    fun setemail(email: String) {
+        this.email = email;
+    }
+
+    fun getemail(): String {
+        return email
+    }
+
+    fun setpassword(password: String) {
+        this.password = password;
+    }
+
+    fun getpassword(): String {
+        return password
+    }
+    fun validationEmail(): Boolean {
+        var value = getemail();
+        if (value.isEmpty()) {
+            return false
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(value).matches()
+        }
+    }
+    fun validationPassword(): Boolean {
+        return getpassword().length == 0
+
+    }
+    fun validationPasswordLenght(): Boolean {
+        return getpassword().length < 5
+
+    }
+
+
+
+}
+
+
+package com.shashigroup.mvvmexample.login.viewmodel
+
+import android.view.View
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.shashigroup.mvvmexample.login.model.Login_Model
+
+
+
+
+
+class LoginViewModel : ViewModel() {
+    var email: MutableLiveData<String> = MutableLiveData()
+    var password: MutableLiveData<String> = MutableLiveData()
+    var userMutableLiveData: MutableLiveData<Login_Model> = MutableLiveData()
+
+
+    init {
+        email.postValue("")
+        password.postValue("")
+    }
+    fun getUser(): MutableLiveData<Login_Model> {
+        if (userMutableLiveData == null) {
+            userMutableLiveData = MutableLiveData()
+        }
+        return userMutableLiveData
+    }
+
+    fun onClick(view: View?) {
+        val loginUser = password.getValue()?.let { email.getValue()
+            ?.let { it1 -> Login_Model(it1, it) } }
+        userMutableLiveData.setValue(loginUser)
+    }
+}
+    <?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="loginViewModel"
+            type="com.shashigroup.mvvmexample.login.viewmodel.LoginViewModel" />
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@={loginViewModel.email}" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@={loginViewModel.password}" />
+
+        <Button
+            android:onClick="@{(v) -> loginViewModel.onClick(v)}"
+
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="OK" />
+    </LinearLayout>
+</layout>
